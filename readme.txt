@@ -25,7 +25,7 @@ Note: Requires wp-xajax plugin.
 
 == Installation ==
 
-0. Install <a href="http://wordpress.org/extend/plugins/wp-xajax">wp-xajax</a> plugin
+0. Install <a href="http://wordpress.org/extend/plugins/wp-xajax/">wp-xajax</a> plugin
 1. Copy the files to your root mu-plugins folder, so you have a tree like:
 
 .../wp-content/mu-plugins/vote_republish.php
