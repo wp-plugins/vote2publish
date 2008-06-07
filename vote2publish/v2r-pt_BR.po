@@ -1,0 +1,84 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: vote2publish\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-05-30 14:03-0300\n"
+"PO-Revision-Date: 2008-06-06 18:26-0300\n"
+"Last-Translator: Leo Germani <leogermani@gmail.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Portuguese\n"
+"X-Poedit-Country: BRAZIL\n"
+"X-Poedit-Basepath: /var/www/redemoc/blogs/wp-content/mu-plugins/\n"
+"X-Poedit-KeywordsList: _e;__\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: vote_republish.php:14
+msgid "Vote to Republish Options"
+msgstr "Opções de Vote e Republique"
+
+#: vote_republish.php:14
+msgid "Vote to Republish"
+msgstr "Vote e Republique"
+
+#: vote_republish.php:17
+#: vote_republish.php:48
+msgid "Vote box layout"
+msgstr "Aparência do botão de votação"
+
+#: vote_republish.php:53
+msgid "Dont show this box!"
+msgstr "Não mostrar esse botão!"
+
+#: vote_republish.php:55
+msgid "Choose the box background"
+msgstr "Escolha o fundo do botão"
+
+#: vote_republish.php:76
+msgid "Box Aligment"
+msgstr "Alinhamento do botão"
+
+#: vote_republish.php:77
+msgid "Left"
+msgstr "Esquerda"
+
+#: vote_republish.php:78
+msgid "Right"
+msgstr "Direita"
+
+#: vote_republish.php:83
+#: vote_republish.php:170
+msgid "Update Settings"
+msgstr "Atualizar Configurações"
+
+#: vote_republish.php:130
+msgid "Vote2Publish Settings"
+msgstr "Configurações de Vote e Republique"
+
+#: vote_republish.php:136
+msgid "Activate Plugin"
+msgstr "Ativar o plugin"
+
+#: vote_republish.php:138
+msgid "Please indicate in wich blog the posts should be republished"
+msgstr "Indique em qual blog os artigos devem ser republicados"
+
+#: vote_republish.php:155
+msgid "How many votes a post have to get to be republished?"
+msgstr "Quantos votos um artigo deve receber para ser republicado?"
+
+#: vote_republish.php:203
+msgid "Vote"
+msgstr "Votar!"
+
+#: vote_republish.php:269
+#, php-format
+msgid "Post originally published in %s on %s"
+msgstr "Artigo originalmente publicado no blog %s em %s"
+
+#: vote_republish.php:286
+msgid "You can vote only once in each post"
+msgstr "Você só pode votar uma vez em cada artigo"
+
