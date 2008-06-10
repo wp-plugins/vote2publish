@@ -6,6 +6,7 @@ Requires at least: 1.5
 Tested up to: 1.5
 Stable tag: 1.0
 
+Wordpress MU Plugin: Adds a box in every post of every blog in the community. The post with a certains number of votes is republished into the "main blog"
 
 == Description ==
 
