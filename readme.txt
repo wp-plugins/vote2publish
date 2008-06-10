@@ -33,9 +33,6 @@ Note: Requires wp-xajax plugin.
 .../wp-content/mu-plugins/vote2publish/bg-1.gif
 .../wp-content/mu-plugins/vote2publish/...all the other files
 
-2. Add this line to the file wp-xajax.php
-
-$xajax->registerFunction("vote2publish_vote");
 
 == Usage ==
 

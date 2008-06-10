@@ -10,11 +10,6 @@ Author URI: http://pirex.com.br/wordpress-plugins
     Vote 2 Republish is released under the GNU General Public License (GPL)
     http://www.gnu.org/licenses/gpl.txt
 	
-
-	
-* Add the following line to your wp-xajax.php file:
-
-$xajax->registerFunction("vote2publish_vote");
     
 */
 
@@ -23,7 +18,10 @@ $xajax->registerFunction("vote2publish_vote");
 load_plugin_textdomain('v2r', 'wp-content/mu-plugins/vote2publish');
 
 
-
+function v2r_xajax(){
+	global $xajax;
+	$xajax->registerFunction("vote2publish_vote");
+}
 
 function v2r_add_menu(){
 	global $current_blog;
@@ -304,6 +302,7 @@ function vote2publish_vote($user,$blog,$post){
 	
 }
 
+add_action('init','v2r_xajax');
 add_action('wp_head','vote_add_styles');
 add_action('admin_menu','v2r_add_menu');
 add_filter('the_content','vote_add_button');
