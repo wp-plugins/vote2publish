@@ -4,7 +4,7 @@ Donate link: http://pirex.com.br/wordpress-plugins
 Tags: republish, wpmu, vote, collaborative, community
 Requires at least: 1.5
 Tested up to: 1.5
-Stable tag: 1.0
+Stable tag: 1.1
 
 Wordpress MU Plugin: Adds a box in every post of every blog in the community. The post with a certains number of votes is republished into the "main blog"
 
@@ -46,7 +46,7 @@ Go to Site Admin > Vote 2 Republish
 
 Now, whenever a user is logged in and visiting the blogs from the community, he/she will see a box for every post where they can vote. The vote count is updated right away.
 
-The blog owners may go to Design > Vote Box layout and change wether they want to have this on their blogs or not. They also can change the colour and the aligmenr of the box.
+Important: The blog owners may go to Design > Vote Box layout and change wether they want to have this on their blogs or not. They also can change the colour and the aligmenr of the box. (They have to do this at least once so the default values for the box layout is loaded)
 
 == Screenshots ==
 

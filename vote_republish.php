@@ -4,7 +4,7 @@ Plugin Name: Vote2Publish
 Plugin URI: http://pirex.com.br/wordpress-plugins/one-click-republish
 Description: Wordpress MU Plugin: Adds a box in every post of every blog in the community. The post with a certains number of votes is republished into the "main blog"
 Author: Leo Germani
-Stable tag: 1.0
+Stable tag: 1.1
 Author URI: http://pirex.com.br/wordpress-plugins
 
     Vote 2 Republish is released under the GNU General Public License (GPL)
@@ -153,8 +153,13 @@ function vote_admin_page(){
 	<BR>
 	<select name="mainBlog">
 		<?php 
-		$blogs = get_site_option( "blog_list" );
+		#$xxx = get_blog_list();
+		#echo $xxx;
+		$blogs = get_blog_list();
+		
 		if( is_array( $blogs ) ) {
+			
+			#echo "AAAAAAAA";
 			#reset( $blogs );
 			foreach ( (array) $blogs as $b ) {
 					echo "<option value='".$b['blog_id']."'";
