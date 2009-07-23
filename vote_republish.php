@@ -4,7 +4,7 @@ Plugin Name: Vote2Publish
 Plugin URI: http://pirex.com.br/wordpress-plugins/one-click-republish
 Description: Wordpress MU Plugin: Adds a box in every post of every blog in the community. The post with a certains number of votes is republished into the "main blog"
 Author: Leo Germani
-Stable tag: 1.1
+Stable tag: 1.3
 Author URI: http://pirex.com.br/wordpress-plugins
 
     Vote 2 Republish is released under the GNU General Public License (GPL)
@@ -25,10 +25,13 @@ function v2r_xajax(){
 
 function v2r_add_menu(){
 	global $current_blog;
-	if (function_exists("add_submenu_page")) add_submenu_page("wpmu-admin.php",__('Vote to Republish Options','v2r'), __('Vote to Republish','v2r'), 8, basename(__FILE__), 'vote_admin_page');
+	if (function_exists("add_submenu_page"))
+            add_submenu_page("wpmu-admin.php",__('Vote to Republish Options','v2r'), __('Vote to Republish','v2r'), 8, basename(__FILE__), 'vote_admin_page');
+
 	$options = 	get_site_option("vote2publish");
 	
-	if($current_blog->blog_id!=$options["mainBlog"] && function_exists("add_theme_page")) add_theme_page(__('Vote box layout','v2r'), __('Vote box layout','v2r'), 8, basename(__FILE__), 'vote_box_layout_page');
+	if($current_blog->blog_id!=$options["mainBlog"] && function_exists("add_theme_page"))
+            add_theme_page(__('Vote box layout','v2r'), __('Vote box layout','v2r'), 8, basename(__FILE__), 'vote_box_layout_page');
 
 }
 
@@ -110,32 +113,54 @@ function vote_admin_page(){
 	
 	if(isset($_POST["submit"])){
 		
-		$active = $_POST["active"] == 1 ? 1 : 0;
-		$newOpt["active"] = $active;
+		$newOpt = get_site_option("vote2publish");
+                if (!$newOpt)
+                    $newOpt = array();
+
+		$newOpt["active"] = $_POST["active"] == 1 ? 1 : 0;
 		$newOpt["mainBlog"] = $_POST["mainBlog"];
 		$newOpt["numVotes"] = $_POST["numVotes"];
+        $newOpt["allowAnonymous"] = $_POST["allowAnonymous"] == 1;
+        $newOpt["onePerIP"] = $_POST["onePerIP"] == 1;
+        $newOpt["cat2publish"] = $_POST["cat2publish"];
+
 		update_site_option("vote2publish",$newOpt);
 		
 	}
 	
+        $tablename = $wpdb->base_prefix . 'vote2publish';
+
 	if (!get_site_option("vote2publish")){
 		#load defaults
-		$options["active"] = 0;
-		$options["mainBlog"] = 1;
-		$options["numVotes"] = 10;
+		$options['active'] = 0;
+		$options['mainBlog'] = 1;
+		$options['numVotes'] = 10;
+		$options['allowAnonymous'] = false;
+		$options['onePerIP'] = false;
+        $options['dbVersion'] = 2;
+        $newOpt["cat2publish"] = 0;
 		
-		$sqlTable = "CREATE TABLE `".$wpdb->base_prefix."vote2publish` (
+		$sqlTable = "CREATE TABLE `$tablename` (
 		`user_id` BIGINT NOT NULL ,
 		`post_id` BIGINT NOT NULL ,
 		`blog_id` BIGINT NOT NULL ,
-		PRIMARY KEY ( `user_id` , `post_id` , `blog_id` )
+                `ip_address` char(15) NOT NULL ,
+
+		PRIMARY KEY ( `blog_id`, `post_id`, `user_id`, `ip_address` )
 		) ENGINE = MYISAM ";
 		
 		mysql_query($sqlTable);
-		update_site_option("vote2publish",$options);
+		update_site_option("vote2publish", $options);
 		
-	}else{
-		$options = 	get_site_option("vote2publish");
+	} else {
+
+		$options = get_site_option("vote2publish");
+
+                if (!$options['dbVersion']) {
+                    vote_upgrade_database();
+                    $options['dbVersion'] = 2;
+                    update_site_option('vote2publish', $options);
+                }
 	}
 	?>
 	
@@ -149,18 +174,17 @@ function vote_admin_page(){
 	<input type="checkbox" style="width:30px; height: 30px;" value="1" name="active" <?php if($options["active"]) echo "checked"; ?>>
 	<?php _e("Activate Plugin",'v2r'); ?>
 	<BR><BR>
-	<?php _e("Please indicate in wich blog the posts should be republished",'v2r'); ?>
+        <label for="option-mainBlog">
+	  <?php _e("Please indicate in wich blog the posts should be republished",'v2r'); ?>
+        </label>
 	<BR>
-	<select name="mainBlog">
+	<select name="mainBlog" id="option-mainBlog">
 		<?php 
-		#$xxx = get_blog_list();
-		#echo $xxx;
+
 		$blogs = get_blog_list();
 		
 		if( is_array( $blogs ) ) {
-			
-			#echo "AAAAAAAA";
-			#reset( $blogs );
+
 			foreach ( (array) $blogs as $b ) {
 					echo "<option value='".$b['blog_id']."'";
 					if($b['blog_id']==$options["mainBlog"]) echo " selected";
@@ -170,10 +194,31 @@ function vote_admin_page(){
 		}
 		?>
 	</select>
-	<BR><BR>
-	<?php _e("How many votes a post have to get to be republished?",'v2r'); ?>
-	<BR>
-	<select name="numVotes">
+	<BR /><BR />
+        <label for="option-cat2publish">
+      <?php _e("In wich category the posts should be republished?",'v2r'); ?>
+        </label>
+    <BR />
+    <select name="cat2publish" id="option-cat2publish">
+        <option value="0" <?php if (0 == $options["cat2publish"]) echo ' selected'; ?>><?php _e('Default category'); ?></option>
+        <?php 
+        switch_to_blog($options["mainBlog"]);
+        $cats = get_categories('hide_empty=0');
+        #print_r($cats); die;
+        foreach ($cats as $cat) {
+            echo "<option value='{$cat->cat_ID}'";
+            if($cat->cat_ID==$options["cat2publish"]) echo " selected";
+            echo ">{$cat->cat_name}</option>";    
+        }
+            
+        ?>
+    </select>
+	<BR /><BR />
+        <label for="option-numVotes">
+  	  <?php _e("How many votes a post have to get to be republished?",'v2r'); ?>
+        </label>
+	<BR />
+	<select name="numVotes" id="option-numVotes">
 		<?php 
 		$x=1;
 		for ($x==1; $x<301; $x++) {
@@ -184,6 +229,17 @@ function vote_admin_page(){
 			
 		?>
 	</select>
+        <BR /><BR />
+        <input type="checkbox" name="allowAnonymous" id="option-allowAnonymous" value="1" <?php if ($options['allowAnonymous']) echo 'checked="true"' ?> />
+        <label for="option-allowAnonymous">
+          <?php _e("Allow anonymous vote") ?>
+        </label>        
+	
+        <BR /><BR />
+        <input type="checkbox" name="onePerIP" id="option-onePerIP" value="1" <?php if ($options['onePerIP']) echo 'checked="true"' ?> />
+        <label for="option-onePerIP">
+          <?php _e("Restrict one vote per IP for anonymous users") ?>
+        </label>        
 	
 	<div class="submit">
 	<input type="submit" name="submit" value="<?php _e('Update Settings','v2r'); ?> &raquo;">
@@ -199,18 +255,26 @@ function vote_admin_page(){
 
 function vote_add_button($content){
 	global $current_blog,$wpdb;
+
 	$options = 	get_site_option("vote2publish");
 	$options_blog = get_option("vote2publish_box");
 		
-	#Dont add the button to the main blog, nor if the plugin is inactive, nor if the blog owner wants to hide it, nor if the user is not logged in
-	if ($options_blog["hide"] || !$options["active"] || $current_blog->blog_id==$options["mainBlog"] || !get_current_user_id()) return $content;
+	#Dont add the button to the main blog, nor if the plugin is inactive, nor if the blog owner wants to hide it, 
+        #nor if anonymous vote is not allowed and user is not logged in
+	if ($options_blog["hide"] || 
+            !$options["active"] || 
+            $current_blog->blog_id==$options["mainBlog"] || 
+            (!$options['allowAnonymous'] && !get_current_user_id())
+            ) 
+            {
+                return $content;
+            }
 	
 	$post = get_the_ID();
 	$tableName = $wpdb->base_prefix . "vote2publish";
 	
 	$count = $wpdb->get_var("SELECT COUNT(*) from $tableName WHERE blog_id = ".$current_blog->blog_id." AND post_id = $post");
-	$voted = $wpdb->get_var("SELECT COUNT(*) from $tableName WHERE blog_id = ".$current_blog->blog_id." AND post_id = $post AND user_id = ".get_current_user_id());
-	
+	$voted = vote_check_voted(get_current_user_id(), $current_blog->blog_id, $post);
 	
 	$vote_button = "
 	<div class='vote2publish_button' id='vote2publish_button_".$current_blog->blog_id."_$post' ";
@@ -260,20 +324,29 @@ function vote_add_styles(){
 	<?php	
 }
 
-function vote2publish_vote($user,$blog,$post){
+function vote2publish_vote($user, $blog, $post){
 	global $wpdb;
+
 	$tableName = $wpdb->base_prefix . "vote2publish";
-	
-	$voted = $wpdb->get_var("SELECT COUNT(*) from $tableName WHERE blog_id = ".$blog." AND post_id = $post AND user_id = $user");
+
 	$objResponse = new xajaxResponse();
+
+        $voted = vote_check_voted($user, $blog, $post);
 	
 	if(!$voted){
 		
-		mysql_query("INSERT INTO $tableName(user_id,blog_id,post_id) VALUES($user, $blog, $post)");
+                $ip = $_SERVER['REMOTE_ADDR'];
+
+		mysql_query("INSERT INTO $tableName(user_id, blog_id, post_id, ip_address) VALUES($user, $blog, $post, '$ip')");
+
+                if (!$user) 
+                    // TODO set all cookie parameters
+                    setcookie(vote_get_cookie_name($blog, $post), 1);
+                
 		$count = $wpdb->get_var("SELECT COUNT(*) from $tableName WHERE blog_id = ".$blog." AND post_id = $post");
 		
-		$options = 	get_site_option("vote2publish");
-		
+                $options = get_site_option("vote2publish");
+                
 		if($options["numVotes"]==$count){
 			
 			
@@ -291,6 +364,9 @@ function vote2publish_vote($user,$blog,$post){
 			$result = array('post_status' => 'publish', 'post_type' => 'post', 'post_author' => $the_post->post_author,
 			'post_content' => $content, 'post_title'=>$the_post->post_title);
 			
+			if ($options["cat2publish"] != 0) $result['post_category'] = array($options["cat2publish"]);
+			
+			
 			switch_to_blog($options["mainBlog"]);
 			$POSTID = wp_insert_post($result);
 			
@@ -306,6 +382,50 @@ function vote2publish_vote($user,$blog,$post){
 	return $objResponse;
 	
 }
+
+function vote_check_voted($user, $blog, $post) {
+    global $wpdb;
+
+    $tableName = $wpdb->base_prefix . "vote2publish";
+    $options = get_site_option("vote2publish");
+
+    $voted = false;
+
+    if (!$user) {
+        if (!$options['allowAnonymous']) {
+            return true; // Can't vote, so let's assume user has already voted
+        }
+        if ($options['onePerIP']) {
+            $voted = $wpdb->get_var("SELECT COUNT(*) from $tableName WHERE blog_id = ".(int)$blog." AND post_id = ".(int)$post." AND user_id = 0 AND ip_address = '".$_SERVER['REMOTE_ADDR']."'");
+        } else {
+            $cookiename = vote_get_cookie_name($blog, $post);
+            if ($_COOKIE[$cookiename]) 
+                $voted = true;
+        }
+    } else {
+        $voted = $wpdb->get_var("SELECT COUNT(*) from $tableName WHERE blog_id = ".(int)$blog." AND post_id = ".(int)$post." AND user_id = ".(int)$user);
+    }
+
+    return $voted;
+}
+
+function vote_get_cookie_name($blog, $post) {
+    return 'vote_republish-'.$blog.'-'.$post.'-voted';
+}
+
+
+function vote_upgrade_database() {
+    global $wpdb;
+
+    $tablename = $wpdb->base_prefix . "vote2publish";
+
+    mysql_query("alter table `$tablename` add `ip_address` char(15) not null");
+    mysql_query("alter table `$tablename` drop primary key");
+    mysql_query("alter table `$tablename` add key (`blog_id`, `post_id`, `user_id`, `ip_address`)");
+    
+}
+
+
 
 add_action('init','v2r_xajax');
 add_action('wp_head','vote_add_styles');
