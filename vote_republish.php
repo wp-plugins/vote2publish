@@ -1,11 +1,11 @@
 <?php
 /*
 Plugin Name: Vote2Publish
-Plugin URI: http://pirex.com.br/wordpress-plugins/one-click-republish
+Plugin URI: http://vote2publish.hacklab.com.br
 Description: Wordpress MU Plugin: Adds a box in every post of every blog in the community. The post with a certains number of votes is republished into the "main blog"
 Author: Leo Germani
 Stable tag: 1.3
-Author URI: http://pirex.com.br/wordpress-plugins
+Author URI: http://hacklab.com.br
 
     Vote 2 Republish is released under the GNU General Public License (GPL)
     http://www.gnu.org/licenses/gpl.txt

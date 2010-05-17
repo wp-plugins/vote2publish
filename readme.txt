@@ -1,9 +1,9 @@
 === Vote 2 Republish ===
 Contributors: LeoGermani
-Donate link: http://pirex.com.br/wordpress-plugins
+Donate link: http://vote2publish.hacklab.com.br
 Tags: republish, wpmu, vote, collaborative, community
 Requires at least: 1.5
-Tested up to: 2.8.2
+Tested up to: 2.9.2
 Stable tag: 1.3
 
 Wordpress MU Plugin: Adds a box in every post of every blog in the community. The post with a certains number of votes is republished into the "main blog"
